@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product QR Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f3f5f7;
+      color: #111;
+    }
+    .wrap {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #111 0%, #2a2f36 100%);
+      color: #fff;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    }
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      font-weight: 800;
+    }
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.5;
+      max-width: 760px;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .stat {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 14px 16px;
+      min-width: 180px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.72);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 800;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.35fr 0.9fr;
+      gap: 20px;
+      align-items: start;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      padding: 18px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 14px;
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.2fr 0.7fr 0.7fr auto;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    input, select, textarea, button, a.action-link {
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #d6dde5;
+      background: #fff;
+      color: #111;
+      outline: none;
+    }
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+      font-family: inherit;
+    }
+    input::placeholder { color: #999; opacity: 1; }
+    button, a.action-link {
+      border: 0;
+      padding: 11px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .primary { background: #111; color: #fff; }
+    .secondary { background: #edf1f5; color: #111; }
+    .success { background: #117a37; color: #fff; }
+    .muted-btn { background: #f7f8fa; color: #333; border: 1px solid #e2e7ec; }
+    .table-wrap {
+      border: 1px solid #e5eaf0;
+      border-radius: 16px;
+      overflow: auto;
+      max-height: 620px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+    }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #edf1f5;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      font-size: 12px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      z-index: 1;
+    }
+    tbody tr:hover { background: #fafcff; }
+    .tag {
+      display: inline-block;
+      padding: 6px 10px;
+      background: #eef2f6;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #333;
+    }
+    .actions-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .side-grid {
+      display: grid;
+      gap: 20px;
+    }
+    .preview-box {
+      border: 1px dashed #ccd5de;
+      border-radius: 16px;
+      padding: 18px;
+      background: #fafbfc;
+      min-height: 280px;
+    }
+    #qrcode {
+      width: 220px;
+      height: 220px;
+      margin: 0 auto 16px;
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #e2e7ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+    #qrcode img, #qrcode canvas {
+      max-width: 100%;
+      height: auto;
+    }
+    .label-box {
+      border: 2px solid #111;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .label-head {
+      background: #111;
+      color: #fff;
+      font-weight: 800;
+      padding: 12px 14px;
+      font-size: 15px;
+      letter-spacing: 0.4px;
+      text-align: center;
+    }
+    .label-body {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    .label-row {
+      display: grid;
+      grid-template-columns: 38% 62%;
+      border-top: 1px solid #111;
+    }
+    .label-key, .label-value {
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .label-key {
+      background: #f4f4f4;
+      font-weight: 800;
+      border-right: 1px solid #111;
+    }
+    .label-value {
+      font-weight: 700;
+      word-break: break-word;
+    }
+    .mini-note {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.5;
+    }
+    .empty {
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+    .url-box {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #e2e7ec;
+      font-size: 12px;
+      word-break: break-word;
+      line-height: 1.5;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .section-copy {
+      display: grid;
+      gap: 6px;
+    }
+    .manager-note, .helper-text {
+      margin: 0;
+      color: #5f6b76;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .manager-actions, .form-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .form-status {
+      display: none;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid #dfe6ec;
+      background: #f7f9fb;
+      color: #50606d;
+      line-height: 1.5;
+    }
+    .form-status.show {
+      display: block;
+    }
+    .form-status.success {
+      background: #eef9f1;
+      border-color: #b8dec3;
+      color: #0c5f28;
+    }
+    .form-status.error {
+      background: #fff3f2;
+      border-color: #f0c3bf;
+      color: #982b21;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+    .field--full {
+      grid-column: 1 / -1;
+    }
+    .field-label {
+      font-size: 12px;
+      color: #555;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .helper-text {
+      margin-top: 14px;
+      font-size: 12px;
+    }
+    .table-action-cell {
+      white-space: nowrap;
+    }
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 17, 17, 0.44);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.24s ease;
+      z-index: 30;
+    }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(720px, 100vw);
+      height: 100vh;
+      background: #f8fafc;
+      box-shadow: -18px 0 40px rgba(0,0,0,0.18);
+      transform: translateX(100%);
+      transition: transform 0.28s ease;
+      z-index: 31;
+      display: flex;
+      flex-direction: column;
+    }
+    .drawer.is-open {
+      transform: translateX(0);
+    }
+    .drawer-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    body.drawer-open {
+      overflow: hidden;
+    }
+    .drawer-head {
+      padding: 22px 22px 18px;
+      border-bottom: 1px solid #e2e7ec;
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .drawer-title-wrap {
+      display: grid;
+      gap: 8px;
+    }
+    .drawer-kicker {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #677581;
+    }
+    .drawer-close {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border-radius: 999px;
+      background: #edf1f5;
+      color: #111;
+      flex: 0 0 auto;
+    }
+    .drawer-body {
+      flex: 1;
+      overflow: auto;
+      padding: 20px 22px 28px;
+    }
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .toolbar { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 24px; }
+      .wrap { padding: 12px; }
+      .card { padding: 14px; }
+      .drawer-head, .drawer-body { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="hero-top">
+        <div>
+          <h1>Product QR Dashboard</h1>
+          <p>Search products, preview the industrial label format, open the product page instantly, and generate QR codes using the exact product ID from <b>products.json</b>.</p>
+        </div>
+        <div class="tag">GitHub Pages Ready</div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-label">Total Products</div>
+          <div class="stat-value" id="stat_total">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Filtered Results</div>
+          <div class="stat-value" id="stat_filtered">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Selected Product</div>
+          <div class="stat-value" id="stat_selected">-</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="section-head">
+          <div class="section-copy">
+            <div class="section-title">Product Browser</div>
+            <p class="manager-note">Browse products, preview labels, and open the editor drawer when you want to create or update a page.</p>
+          </div>
+          <div class="manager-actions">
+            <button class="primary" id="newProductBtn" type="button">Create New</button>
+            <button class="muted-btn" id="editSelectedBtn" type="button">Edit Selected</button>
+          </div>
+        </div>
+        <div class="toolbar">
+          <input id="searchInput" placeholder="Search by product ID, drawing number, supplier, material..." />
+          <select id="machineFilter">
+            <option value="">All Machines</option>
+          </select>
+          <select id="sortSelect">
+            <option value="product_id">Sort: Product ID</option>
+            <option value="wooden_drum_no">Sort: Drum No</option>
+            <option value="machine_identification_number">Sort: Machine</option>
+          </select>
+          <button class="secondary" id="resetBtn" type="button">Reset</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Product ID</th>
+                <th>Supplier</th>
+                <th>Drawing</th>
+                <th>Material</th>
+                <th>Drum No</th>
+                <th>Machine</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td colspan="7" class="empty">Loading products...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="side-grid">
+        <div class="card">
+          <div class="section-title">QR Preview</div>
+          <div class="preview-box">
+            <div id="qrcode"></div>
+            <button class="primary" id="generateQrBtn" type="button" style="width:100%;margin-bottom:10px;">Generate QR for Selected Product</button>
+            <button class="success" id="downloadQrBtn" type="button" style="width:100%;">Download QR PNG</button>
+            <div class="url-box" id="qrUrlBox">Select a product to generate QR.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">Industrial Label Preview</div>
+          <div id="labelPreview" class="label-box">
+            <div class="label-head">SELECT A PRODUCT</div>
+            <div class="empty">Choose a row from the table to preview the formatted label.</div>
+          </div>
+          <div class="mini-note">This preview matches the formatted product page style. Use the Open button in the table to check the final page directly.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-backdrop" id="editorBackdrop" hidden></div>
+  <aside class="drawer" id="editorDrawer" aria-hidden="true" aria-labelledby="formHeading">
+    <div class="drawer-head">
+      <div class="drawer-title-wrap">
+        <div class="drawer-kicker">Product Editor</div>
+        <div class="section-title" id="formHeading">Create New Product Page</div>
+        <p class="manager-note">Generate the updated <b>products.json</b> and matching HTML page download for <b>pages/</b>. GitHub Pages stays static, so the browser prepares the files for you to commit.</p>
+      </div>
+      <button class="drawer-close" id="closeEditorBtn" type="button" aria-label="Close editor">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
+      <form id="productForm">
+        <input type="hidden" id="originalProductId" name="original_product_id" />
+        <div class="form-grid" id="productFormFields"></div>
+        <div class="form-actions" style="margin-top:18px;">
+          <button class="primary" id="saveProductBtn" type="submit">Generate Files for GitHub</button>
+          <button class="secondary" id="resetFormBtn" type="button">Reset Form</button>
+          <button class="success" id="downloadPageBtn" type="button" hidden>Download HTML Page</button>
+          <button class="secondary" id="downloadProductsBtn" type="button" hidden>Download products.json</button>
+        </div>
+      </form>
+      <p class="helper-text">Tip: use Edit from the table to load an existing product into this drawer, or Create New to start from blank. After submit, commit the downloaded files to GitHub.</p>
+    </div>
+  </aside>
+
+  <script>
+    const fieldConfig = [
+      { key: 'product_id', label: 'Product ID', required: true, placeholder: 'DRUM_81_80' },
+      { key: 'supplier_name', label: 'Supplier Name', placeholder: 'MADRAS HYDRAULIC HOSE (P) LTD' },
+      { key: 'traceable_date_code', label: 'Traceable Date Code', placeholder: '31.01.2026' },
+      { key: 'drawing_number', label: 'Drawing Number', placeholder: 'AQF-B-010-010, REV-G' },
+      { key: 'material_description', label: 'Material Description', placeholder: 'BRAIDED FLEXIBLE HOSE' },
+      { key: 'nominal_diameter', label: 'Nominal Diameter', placeholder: '1"' },
+      { key: 'wooden_drum_no', label: 'Wooden Drum No', placeholder: '81 / 80' },
+      { key: 'hose_material_heat_no', label: 'Hose Material & Heat No', placeholder: '304L & A250504AC27' },
+      { key: 'braid_material_lot_no', label: 'Braid Material & Lot No', placeholder: '25/315' },
+      { key: 'length_details_meters', label: 'Length Details (Meters)', placeholder: '275.00 (...)', multiline: true, full: true },
+      { key: 'total_quantity', label: 'Total Quantity', placeholder: '275.00 (902.00 Ft)' },
+      { key: 'material_certification_control_number', label: 'Material Certification Control Number', placeholder: 'TC. No : MHH / 366 & 31.01.2026', multiline: true, full: true },
+      { key: 'invoice_number_date', label: 'Invoice Number & Date', placeholder: 'EX/MHH/25-26/366 & 31.01.2026' },
+      { key: 'machine_identification_number', label: 'Machine Identification Number', placeholder: 'HIGH SPEED CORRUGATOR MACHINE : M' },
+      { key: 'purchase_agreement_number', label: 'Purchase Agreement Number', placeholder: 'CK 5871 - 2014 / C157' }
+    ];
+
+    let products = [];
+    let filteredProducts = [];
+    let selectedProduct = null;
+    let currentFormMode = 'create';
+    let pageTemplateHtml = '';
+    let lastGeneratedProduct = null;
+    let lastRenamedFromId = '';
+
+    const prettyLabels = {
+      product_id: 'PRODUCT ID',
+      product_name: 'PRODUCT NAME',
+      supplier_name: 'SUPPLIER NAME',
+      traceable_date_code: 'TRACEABLE DATE CODE',
+      date_code: 'TRACEABLE DATE CODE',
+      drawing_number: 'VICTAULIC DRAWING NUMBER',
+      material_description: 'MATERIAL DESCRIPTION',
+      nominal_diameter: 'NOMINAL DIAMETER',
+      wooden_drum_no: 'WOODEN DRUM No',
+      drum_no: 'WOODEN DRUM No',
+      hose_material_heat_no: 'HOSE MATERIAL & HEAT No',
+      braid_material_lot_no: 'BRAID MATERIAL & LOT No',
+      length_details_meters: 'LENGTH DETAILS (METERS)',
+      total_quantity: 'TOTAL QUANTITY',
+      material_certification_control_number: 'MATERIAL CERTIFICATION CONTROL NUMBER',
+      invoice_number_date: 'INVOICE NUMBER & DATE',
+      machine_identification_number: 'MACHINE IDENTIFICATION NUMBER',
+      purchase_agreement_number: 'PURCHASE AGREEMENT NUMBER'
+    };
+
+    function slugify(value) {
+      return (value || 'item').toString().trim()
+        .replace(/[^A-Za-z0-9._-]+/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_+|_+$/g, '') || 'item';
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function pageUrl(productId) {
+      const slug = encodeURIComponent(slugify(productId));
+      const currentPath = window.location.pathname;
+      const hasFilename = /\.[^/]+$/.test(currentPath);
+      const basePath = currentPath.endsWith('/') ? currentPath : (hasFilename ? currentPath.replace(/\/[^/]*$/, '/') : `${currentPath}/`);
+      return `${window.location.origin}${basePath}pages/${slug}.html`;
+    }
+
+    function normalizeProduct(product = {}) {
+      const normalized = {};
+      fieldConfig.forEach(field => {
+        normalized[field.key] = String(product[field.key] ?? '').trim();
+      });
+      return normalized;
+    }
+
+    function renderFormFields() {
+      const container = document.getElementById('productFormFields');
+      container.innerHTML = fieldConfig.map(field => {
+        const requiredMarker = field.required ? ' *' : '';
+        const fieldClass = field.full ? 'field field--full' : 'field';
+        if (field.multiline) {
+          return `
+            <label class="${fieldClass}">
+              <span class="field-label">${escapeHtml(field.label)}${requiredMarker}</span>
+              <textarea id="field_${field.key}" name="${field.key}" placeholder="${escapeHtml(field.placeholder || '')}"></textarea>
+            </label>
+          `;
+        }
+
+        return `
+          <label class="${fieldClass}">
+            <span class="field-label">${escapeHtml(field.label)}${requiredMarker}</span>
+            <input id="field_${field.key}" name="${field.key}" type="text" placeholder="${escapeHtml(field.placeholder || '')}" ${field.required ? 'required' : ''} />
+          </label>
+        `;
+      }).join('');
+    }
+
+    async function loadPageTemplate() {
+      if (pageTemplateHtml) {
+        return pageTemplateHtml;
+      }
+
+      const response = await fetch('page-template.html', { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error('Could not load page-template.html.');
+      }
+
+      pageTemplateHtml = await response.text();
+      return pageTemplateHtml;
+    }
+
+    function hideDownloadButtons() {
+      document.getElementById('downloadPageBtn').hidden = true;
+      document.getElementById('downloadProductsBtn').hidden = true;
+    }
+
+    function showDownloadButtons() {
+      document.getElementById('downloadPageBtn').hidden = false;
+      document.getElementById('downloadProductsBtn').hidden = false;
+    }
+
+    function triggerDownload(filename, content, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function currentProductsJson() {
+      return `${JSON.stringify(products, null, 2)}\n`;
+    }
+
+    async function downloadGeneratedPage(product = lastGeneratedProduct) {
+      if (!product) {
+        setFormStatus('Save a product first so the page file can be generated.', 'error');
+        return;
+      }
+
+      const template = await loadPageTemplate();
+      triggerDownload(`${slugify(product.product_id)}.html`, template, 'text/html;charset=utf-8');
+    }
+
+    function downloadProductsJson() {
+      if (!products.length) {
+        setFormStatus('Load the catalog before downloading products.json.', 'error');
+        return;
+      }
+
+      triggerDownload('products.json', currentProductsJson(), 'application/json;charset=utf-8');
+    }
+
+    function setFormMode(mode) {
+      currentFormMode = mode;
+      document.getElementById('formHeading').textContent = mode === 'edit' ? 'Edit Product Page' : 'Create New Product Page';
+      document.getElementById('saveProductBtn').textContent = mode === 'edit' ? 'Update Files for GitHub' : 'Generate Files for GitHub';
+    }
+
+    function clearFormStatus() {
+      const status = document.getElementById('formStatus');
+      status.textContent = '';
+      status.className = 'form-status';
+      hideDownloadButtons();
+    }
+
+    function setFormStatus(message, type = 'info', showDownloads = false) {
+      const status = document.getElementById('formStatus');
+      status.textContent = message;
+      status.className = `form-status show${type === 'success' ? ' success' : type === 'error' ? ' error' : ''}`;
+      if (showDownloads) showDownloadButtons();
+      else hideDownloadButtons();
+    }
+
+    function resetProductForm({ clearStatus = true } = {}) {
+      document.getElementById('productForm').reset();
+      document.getElementById('originalProductId').value = '';
+      setFormMode('create');
+      hideDownloadButtons();
+      if (clearStatus) {
+        clearFormStatus();
+      }
+    }
+
+    function populateForm(product) {
+      const normalized = normalizeProduct(product);
+      fieldConfig.forEach(field => {
+        document.getElementById(`field_${field.key}`).value = normalized[field.key];
+      });
+      document.getElementById('originalProductId').value = normalized.product_id;
+      setFormMode('edit');
+      hideDownloadButtons();
+    }
+
+    function collectFormProduct() {
+      const product = {};
+      fieldConfig.forEach(field => {
+        product[field.key] = document.getElementById(`field_${field.key}`).value.trim();
+      });
+      return product;
+    }
+
+    function findProduct(productId) {
+      return products.find(product => String(product.product_id) === String(productId)) || null;
+    }
+
+    function setDrawerOpen(isOpen) {
+      const drawer = document.getElementById('editorDrawer');
+      const backdrop = document.getElementById('editorBackdrop');
+
+      drawer.classList.toggle('is-open', isOpen);
+      drawer.setAttribute('aria-hidden', String(!isOpen));
+      backdrop.classList.toggle('is-open', isOpen);
+      backdrop.hidden = !isOpen;
+      document.body.classList.toggle('drawer-open', isOpen);
+    }
+
+    function openEditorDrawer() {
+      setDrawerOpen(true);
+      setTimeout(() => {
+        const field = document.getElementById('field_product_id');
+        if (field) field.focus();
+      }, 120);
+    }
+
+    function closeEditorDrawer() {
+      setDrawerOpen(false);
+    }
+
+    function sortProducts() {
+      products.sort((a, b) => String(a.product_id || '').localeCompare(String(b.product_id || ''), undefined, { numeric: true, sensitivity: 'base' }));
+    }
+
+    async function loadProducts(selectedId = '') {
+      try {
+        const [res] = await Promise.all([
+          fetch('products.json', { cache: 'no-store' }),
+          loadPageTemplate().catch(error => {
+            console.error(error);
+            return '';
+          })
+        ]);
+        if (!res.ok) throw new Error('Could not load products.json');
+        const data = await res.json();
+        products = Array.isArray(data) ? data.map(normalizeProduct) : [];
+        const nextSelectedId = selectedId || selectedProduct?.product_id || '';
+        selectedProduct = nextSelectedId ? findProduct(nextSelectedId) : null;
+        populateMachineFilter();
+        applyFilters();
+        renderLabelPreview();
+        clearQr();
+      } catch (error) {
+        console.error(error);
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" class="empty">Failed to load products.json</td></tr>';
+        setFormStatus('Could not load the product catalog.', 'error');
+      }
+    }
+
+    function populateMachineFilter() {
+      const select = document.getElementById('machineFilter');
+      const currentValue = select.value;
+      const values = [...new Set(products.map(p => (p.machine_identification_number || '').trim()).filter(Boolean))].sort();
+      select.innerHTML = '<option value="">All Machines</option>';
+      values.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+      });
+      select.value = values.includes(currentValue) ? currentValue : '';
+    }
+
+    function updateStats() {
+      document.getElementById('stat_total').textContent = products.length;
+      document.getElementById('stat_filtered').textContent = filteredProducts.length;
+      document.getElementById('stat_selected').textContent = selectedProduct?.product_id || '-';
+    }
+
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.trim().toLowerCase();
+      const machine = document.getElementById('machineFilter').value;
+      const sortBy = document.getElementById('sortSelect').value;
+
+      filteredProducts = products.filter(product => {
+        const matchesSearch = !search || Object.values(product).some(value => String(value || '').toLowerCase().includes(search));
+        const matchesMachine = !machine || (product.machine_identification_number || '') === machine;
+        return matchesSearch && matchesMachine;
+      });
+
+      filteredProducts.sort((a, b) => String(a[sortBy] || '').localeCompare(String(b[sortBy] || ''), undefined, { numeric: true, sensitivity: 'base' }));
+      updateStats();
+      renderTable();
+    }
+
+    function renderTable() {
+      const body = document.getElementById('tableBody');
+      if (!filteredProducts.length) {
+        body.innerHTML = '<tr><td colspan="7" class="empty">No matching products found.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = filteredProducts.map(product => `
+        <tr>
+          <td><strong>${escapeHtml(product.product_id || '')}</strong></td>
+          <td>${escapeHtml(product.supplier_name || '')}</td>
+          <td>${escapeHtml(product.drawing_number || '')}</td>
+          <td>${escapeHtml(product.material_description || '')}</td>
+          <td>${escapeHtml(product.wooden_drum_no || '')}</td>
+          <td>${escapeHtml(product.machine_identification_number || '')}</td>
+          <td class="table-action-cell">
+            <div class="actions-row">
+              <button class="muted-btn" type="button" data-action="preview" data-product-id="${escapeHtml(product.product_id || '')}">Preview</button>
+              <button class="secondary" type="button" data-action="edit" data-product-id="${escapeHtml(product.product_id || '')}">Edit</button>
+              <a class="action-link secondary" href="${escapeHtml(pageUrl(product.product_id || ''))}" target="_blank">Open</a>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function selectProduct(productId) {
+      selectedProduct = findProduct(productId);
+      updateStats();
+      renderLabelPreview();
+      clearQr();
+    }
+
+    function editProduct(productId) {
+      const product = findProduct(productId);
+      if (!product) {
+        setFormStatus('The selected product could not be loaded for editing.', 'error');
+        return;
+      }
+
+      selectProduct(productId);
+      populateForm(product);
+      setFormStatus(`Editing ${product.product_id}. Submit the form to regenerate the page HTML and updated products.json for GitHub.`, 'info');
+      openEditorDrawer();
+    }
+
+    function renderLabelPreview() {
+      const box = document.getElementById('labelPreview');
+      if (!selectedProduct) {
+        box.innerHTML = '<div class="label-head">SELECT A PRODUCT</div><div class="empty">Choose a row from the table to preview the formatted label.</div>';
+        return;
+      }
+
+      const rows = Object.entries(selectedProduct)
+        .filter(([_, value]) => value !== null && value !== undefined && value !== '')
+        .map(([key, value]) => `
+          <div class="label-row">
+            <div class="label-key">${escapeHtml(prettyLabels[key] || key)}</div>
+            <div class="label-value">${escapeHtml(value)}</div>
+          </div>
+        `).join('');
+
+      box.innerHTML = `
+        <div class="label-head">INDUSTRIAL PRODUCT LABEL</div>
+        <div class="label-body">${rows}</div>
+      `;
+    }
+
+    function clearQr() {
+      document.getElementById('qrcode').innerHTML = '';
+      document.getElementById('qrUrlBox').textContent = selectedProduct ? 'Selected product ready. Click Generate QR.' : 'Select a product to generate QR.';
+    }
+
+    function generateQr() {
+      if (!selectedProduct) {
+        alert('Select a product first.');
+        return;
+      }
+      const url = pageUrl(selectedProduct.product_id);
+      document.getElementById('qrcode').innerHTML = '';
+      new QRCode(document.getElementById('qrcode'), {
+        text: url,
+        width: 220,
+        height: 220,
+        correctLevel: QRCode.CorrectLevel.M
+      });
+      document.getElementById('qrUrlBox').textContent = url;
+    }
+
+    function downloadQr() {
+      const canvas = document.querySelector('#qrcode canvas');
+      if (!canvas) {
+        alert('Generate QR first.');
+        return;
+      }
+      const id = selectedProduct?.product_id || 'product_qr';
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL();
+      a.download = `${slugify(id)}.png`;
+      a.click();
+    }
+
+    function findProductIndex(productId) {
+      return products.findIndex(product => String(product.product_id) === String(productId));
+    }
+
+    function buildSaveMessage(productId, renamedFrom = '') {
+      const files = `Downloaded ${slugify(productId)}.html and products.json. Upload them to GitHub.`;
+      if (renamedFrom && renamedFrom !== productId) {
+        return `${files} Also remove pages/${slugify(renamedFrom)}.html from the repo if you are replacing the old ID.`;
+      }
+      return files;
+    }
+
+    async function saveProduct(event) {
+      event.preventDefault();
+
+      const product = normalizeProduct(collectFormProduct());
+      const originalProductId = document.getElementById('originalProductId').value.trim();
+      const saveButton = document.getElementById('saveProductBtn');
+
+      if (!product.product_id) {
+        setFormStatus('Product ID is required before saving.', 'error');
+        document.getElementById('field_product_id').focus();
+        return;
+      }
+
+      saveButton.disabled = true;
+      saveButton.textContent = currentFormMode === 'edit' ? 'Generating Updated Files...' : 'Generating Files...';
+
+      try {
+        const existingIndexByOriginal = originalProductId ? findProductIndex(originalProductId) : -1;
+        const existingIndexByNewId = findProductIndex(product.product_id);
+
+        if (!originalProductId && existingIndexByNewId !== -1) {
+          throw new Error('That Product ID already exists. Use edit mode to update it.');
+        }
+
+        if (originalProductId && originalProductId !== product.product_id && existingIndexByNewId !== -1) {
+          throw new Error('The new Product ID already belongs to another product.');
+        }
+
+        if (existingIndexByOriginal !== -1) {
+          products.splice(existingIndexByOriginal, 1, product);
+        } else {
+          products.push(product);
+        }
+
+        sortProducts();
+        lastGeneratedProduct = product;
+        lastRenamedFromId = originalProductId && originalProductId !== product.product_id ? originalProductId : '';
+
+        document.getElementById('searchInput').value = '';
+        document.getElementById('machineFilter').value = '';
+        document.getElementById('sortSelect').value = 'product_id';
+
+        populateMachineFilter();
+        applyFilters();
+        selectProduct(product.product_id);
+        populateForm(product);
+
+        await downloadGeneratedPage(product);
+        setTimeout(() => downloadProductsJson(), 120);
+
+        setFormStatus(buildSaveMessage(product.product_id, lastRenamedFromId), 'success', true);
+        openEditorDrawer();
+      } catch (error) {
+        console.error(error);
+        setFormStatus(error.message || 'Could not save the product.', 'error');
+        openEditorDrawer();
+      } finally {
+        saveButton.disabled = false;
+        setFormMode(currentFormMode);
+      }
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('machineFilter').value = '';
+      document.getElementById('sortSelect').value = 'product_id';
+      filteredProducts = [...products];
+      selectedProduct = null;
+      updateStats();
+      renderTable();
+      renderLabelPreview();
+      clearQr();
+    }
+
+    document.getElementById('tableBody').addEventListener('click', event => {
+      const actionTarget = event.target.closest('[data-action]');
+      if (!actionTarget) return;
+
+      const { action, productId } = actionTarget.dataset;
+      if (action === 'preview') {
+        selectProduct(productId);
+      } else if (action === 'edit') {
+        editProduct(productId);
+      }
+    });
+
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('machineFilter').addEventListener('change', applyFilters);
+    document.getElementById('sortSelect').addEventListener('change', applyFilters);
+    document.getElementById('resetBtn').addEventListener('click', resetFilters);
+    document.getElementById('generateQrBtn').addEventListener('click', generateQr);
+    document.getElementById('downloadQrBtn').addEventListener('click', downloadQr);
+    document.getElementById('downloadPageBtn').addEventListener('click', () => {
+      downloadGeneratedPage().catch(error => {
+        console.error(error);
+        setFormStatus(error.message || 'Could not generate the HTML page.', 'error');
+      });
+    });
+    document.getElementById('downloadProductsBtn').addEventListener('click', downloadProductsJson);
+    document.getElementById('productForm').addEventListener('submit', saveProduct);
+    document.getElementById('newProductBtn').addEventListener('click', () => {
+      resetProductForm();
+      setFormStatus('Ready to create a brand-new product. Submit to download the generated files for GitHub.', 'info');
+      openEditorDrawer();
+    });
+    document.getElementById('editSelectedBtn').addEventListener('click', () => {
+      if (!selectedProduct) {
+        setFormStatus('Select a product first, then use Edit Selected.', 'error');
+        openEditorDrawer();
+        return;
+      }
+      editProduct(selectedProduct.product_id);
+    });
+    document.getElementById('resetFormBtn').addEventListener('click', () => {
+      resetProductForm();
+      setFormStatus('Form cleared. You can enter a new product now.', 'info');
+    });
+    document.getElementById('closeEditorBtn').addEventListener('click', closeEditorDrawer);
+    document.getElementById('editorBackdrop').addEventListener('click', closeEditorDrawer);
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && document.getElementById('editorDrawer').classList.contains('is-open')) {
+        closeEditorDrawer();
+      }
+    });
+
+    renderFormFields();
+    resetProductForm({ clearStatus: false });
+    loadProducts();
+  </script>
+</body>
+</html>
