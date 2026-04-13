@@ -700,7 +700,8 @@
 
     async function buildLocalPreviewHtml(product) {
       const template = await buildGeneratedPageHtml();
-      const previewScript = `<script>window.__PRODUCT_PREVIEW__ = ${JSON.stringify(product)};</script>\n`;
+      const previewJson = JSON.stringify(product).replace(/</g, '\\u003C');
+      const previewScript = `<script>window.__PRODUCT_PREVIEW__ = ${previewJson};<\/script>\n`;
       return template.replace('<script>', `${previewScript}<script>`);
     }
 
