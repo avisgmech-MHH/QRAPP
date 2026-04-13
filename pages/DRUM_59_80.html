@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Details</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f3f5f7 0%, #e8edf2 100%);
+      color: #111;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .back-link, .print-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      border: 0;
+      cursor: pointer;
+    }
+    .back-link {
+      background: #111;
+      color: #fff;
+    }
+    .print-btn {
+      background: #edf1f5;
+      color: #111;
+    }
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
+      padding: 22px;
+    }
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #5f6b76;
+      margin-bottom: 8px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.1;
+    }
+    .subtitle {
+      margin: 0;
+      color: #51606d;
+      line-height: 1.6;
+    }
+    .meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    .tag {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eef2f6;
+      color: #25313b;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .status {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #f7f9fb;
+      border: 1px solid #dde5ec;
+      color: #51606d;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .status.error {
+      background: #fff3f2;
+      border-color: #f0c3bf;
+      color: #982b21;
+    }
+    .label-box {
+      border: 2px solid #111;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #fff;
+      margin-top: 18px;
+    }
+    .label-head {
+      background: #111;
+      color: #fff;
+      font-weight: 800;
+      padding: 14px 16px;
+      font-size: 16px;
+      letter-spacing: 0.4px;
+      text-align: center;
+    }
+    .label-body {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    .label-row {
+      display: grid;
+      grid-template-columns: 36% 64%;
+      border-top: 1px solid #111;
+    }
+    .label-key, .label-value {
+      padding: 11px 12px;
+      font-size: 14px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+    .label-key {
+      background: #f4f4f4;
+      font-weight: 800;
+      border-right: 1px solid #111;
+    }
+    .label-value {
+      font-weight: 700;
+    }
+    @media (max-width: 700px) {
+      .wrap { padding: 14px; }
+      .card { padding: 16px; }
+      h1 { font-size: 24px; }
+      .label-row { grid-template-columns: 1fr; }
+      .label-key { border-right: 0; border-bottom: 1px solid #111; }
+    }
+    @media print {
+      body { background: #fff; }
+      .wrap { max-width: none; padding: 0; }
+      .topbar { display: none; }
+      .card { box-shadow: none; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="back-link" href="../index.html">Back to Dashboard</a>
+      <button class="print-btn" type="button" onclick="window.print()">Print Label</button>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Industrial Product Label</div>
+      <h1 id="pageTitle">Loading product...</h1>
+      <p class="subtitle" id="pageSubtitle">Fetching product details from the shared product catalog.</p>
+      <div class="meta" id="metaTags"></div>
+      <div id="status" class="status">Loading product details...</div>
+      <div id="labelPreview" class="label-box" hidden></div>
+    </div>
+  </div>
+
+  <script>
+    const prettyLabels = {
+      product_id: 'PRODUCT ID',
+      product_name: 'PRODUCT NAME',
+      supplier_name: 'SUPPLIER NAME',
+      traceable_date_code: 'TRACEABLE DATE CODE',
+      date_code: 'TRACEABLE DATE CODE',
+      drawing_number: 'VICTAULIC DRAWING NUMBER',
+      material_description: 'MATERIAL DESCRIPTION',
+      nominal_diameter: 'NOMINAL DIAMETER',
+      wooden_drum_no: 'WOODEN DRUM No',
+      drum_no: 'WOODEN DRUM No',
+      hose_material_heat_no: 'HOSE MATERIAL & HEAT No',
+      braid_material_lot_no: 'BRAID MATERIAL & LOT No',
+      length_details_meters: 'LENGTH DETAILS (METERS)',
+      total_quantity: 'TOTAL QUANTITY',
+      material_certification_control_number: 'MATERIAL CERTIFICATION CONTROL NUMBER',
+      invoice_number_date: 'INVOICE NUMBER & DATE',
+      machine_identification_number: 'MACHINE IDENTIFICATION NUMBER',
+      purchase_agreement_number: 'PURCHASE AGREEMENT NUMBER'
+    };
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function currentProductId() {
+      const filename = window.location.pathname.split('/').pop() || '';
+      return decodeURIComponent(filename.replace(/\.html$/i, ''));
+    }
+
+    function renderMetaTags(product) {
+      const metaTags = document.getElementById('metaTags');
+      const items = [
+        product.supplier_name && `Supplier: ${product.supplier_name}`,
+        product.machine_identification_number && `Machine: ${product.machine_identification_number}`,
+        product.wooden_drum_no && `Drum: ${product.wooden_drum_no}`
+      ].filter(Boolean);
+
+      metaTags.innerHTML = items.map(item => `<span class="tag">${escapeHtml(item)}</span>`).join('');
+    }
+
+    function renderStatus(message, isError) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = isError ? 'status error' : 'status';
+      status.hidden = false;
+    }
+
+    function renderLabel(product) {
+      const box = document.getElementById('labelPreview');
+      const rows = Object.entries(product)
+        .filter(([, value]) => value !== null && value !== undefined && value !== '')
+        .map(([key, value]) => `
+          <div class="label-row">
+            <div class="label-key">${escapeHtml(prettyLabels[key] || key)}</div>
+            <div class="label-value">${escapeHtml(value)}</div>
+          </div>
+        `).join('');
+
+      box.innerHTML = `
+        <div class="label-head">INDUSTRIAL PRODUCT LABEL</div>
+        <div class="label-body">${rows}</div>
+      `;
+      box.hidden = false;
+    }
+
+    async function loadProduct() {
+      const productId = currentProductId();
+      document.getElementById('pageTitle').textContent = productId || 'Product Details';
+      document.title = productId ? `${productId} | Product Label` : 'Product Label';
+
+      try {
+        const response = await fetch('../products.json', { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error('Could not load products.json');
+        }
+
+        const products = await response.json();
+        const product = products.find(item => String(item.product_id) === String(productId));
+
+        if (!product) {
+          document.getElementById('pageSubtitle').textContent = 'This product page does not match any record in the catalog.';
+          renderStatus(`No product record found for ${productId}.`, true);
+          return;
+        }
+
+        document.getElementById('pageTitle').textContent = product.product_id || 'Product Details';
+        document.getElementById('pageSubtitle').textContent = product.material_description || 'Product details loaded from the shared catalog.';
+        renderMetaTags(product);
+        renderStatus('Product details loaded successfully.', false);
+        renderLabel(product);
+      } catch (error) {
+        console.error(error);
+        document.getElementById('pageSubtitle').textContent = 'The product page could not load its shared data source.';
+        renderStatus('Failed to load product details from products.json.', true);
+      }
+    }
+
+    loadProduct();
+  </script>
+</body>
+</html>
