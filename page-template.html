@@ -200,7 +200,15 @@
         .replace(/'/g, '&#39;');
     }
 
+    function previewProduct() {
+      return window.__PRODUCT_PREVIEW__ || null;
+    }
+
     function currentProductId() {
+      const preview = previewProduct();
+      if (preview?.product_id) {
+        return String(preview.product_id);
+      }
       const filename = window.location.pathname.split('/').pop() || '';
       return decodeURIComponent(filename.replace(/\.html$/i, ''));
     }
@@ -245,6 +253,16 @@
       const productId = currentProductId();
       document.getElementById('pageTitle').textContent = productId || 'Product Details';
       document.title = productId ? `${productId} | Product Label` : 'Product Label';
+
+      const injectedPreviewProduct = previewProduct();
+      if (injectedPreviewProduct) {
+        document.getElementById('pageTitle').textContent = injectedPreviewProduct.product_id || 'Product Details';
+        document.getElementById('pageSubtitle').textContent = injectedPreviewProduct.material_description || 'Product details loaded from the local preview.';
+        renderMetaTags(injectedPreviewProduct);
+        renderStatus('Local preview generated from the dashboard.', false);
+        renderLabel(injectedPreviewProduct);
+        return;
+      }
 
       try {
         const response = await fetch('../products.json', { cache: 'no-store' });

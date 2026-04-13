@@ -253,6 +253,16 @@
       word-break: break-word;
       line-height: 1.5;
     }
+    .preview-warning {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #7b5a11;
+      line-height: 1.5;
+      background: #fff7df;
+      border: 1px solid #f1de9e;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
     .section-head {
       display: flex;
       justify-content: space-between;
@@ -275,6 +285,10 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+    }
+    .link-btn {
+      border: 0;
+      text-decoration: none;
     }
     .form-status {
       display: none;
@@ -484,6 +498,7 @@
             <button class="primary" id="generateQrBtn" type="button" style="width:100%;margin-bottom:10px;">Generate QR for Selected Product</button>
             <button class="success" id="downloadQrBtn" type="button" style="width:100%;">Download QR PNG</button>
             <div class="url-box" id="qrUrlBox">Select a product to generate QR.</div>
+            <div class="preview-warning" id="pageAvailabilityNote">The `Open` link works only after the matching HTML file is uploaded into the `pages/` folder on GitHub Pages.</div>
           </div>
         </div>
 
@@ -517,6 +532,7 @@
         <div class="form-actions" style="margin-top:18px;">
           <button class="primary" id="saveProductBtn" type="submit">Generate Files for GitHub</button>
           <button class="secondary" id="resetFormBtn" type="button">Reset Form</button>
+          <button class="muted-btn" id="localPreviewBtn" type="button" hidden>Local Preview</button>
           <button class="success" id="downloadPageBtn" type="button" hidden>Download HTML Page</button>
           <button class="secondary" id="downloadProductsBtn" type="button" hidden>Download products.json</button>
         </div>
@@ -551,6 +567,7 @@
     let pageTemplateHtml = '';
     let lastGeneratedProduct = null;
     let lastRenamedFromId = '';
+    let localPreviewUrl = '';
 
     const prettyLabels = {
       product_id: 'PRODUCT ID',
@@ -643,11 +660,13 @@
     }
 
     function hideDownloadButtons() {
+      document.getElementById('localPreviewBtn').hidden = true;
       document.getElementById('downloadPageBtn').hidden = true;
       document.getElementById('downloadProductsBtn').hidden = true;
     }
 
     function showDownloadButtons() {
+      document.getElementById('localPreviewBtn').hidden = false;
       document.getElementById('downloadPageBtn').hidden = false;
       document.getElementById('downloadProductsBtn').hidden = false;
     }
@@ -664,8 +683,36 @@
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
+    function setLocalPreviewUrl(content) {
+      if (localPreviewUrl) {
+        URL.revokeObjectURL(localPreviewUrl);
+      }
+      localPreviewUrl = URL.createObjectURL(new Blob([content], { type: 'text/html;charset=utf-8' }));
+    }
+
     function currentProductsJson() {
       return `${JSON.stringify(products, null, 2)}\n`;
+    }
+
+    async function buildGeneratedPageHtml() {
+      return loadPageTemplate();
+    }
+
+    async function buildLocalPreviewHtml(product) {
+      const template = await buildGeneratedPageHtml();
+      const previewScript = `<script>window.__PRODUCT_PREVIEW__ = ${JSON.stringify(product)};</script>\n`;
+      return template.replace('<script>', `${previewScript}<script>`);
+    }
+
+    async function openLocalPreview(product = lastGeneratedProduct) {
+      if (!product) {
+        setFormStatus('Save a product first so the page preview can be generated.', 'error');
+        return;
+      }
+
+      const previewHtml = await buildLocalPreviewHtml(product);
+      setLocalPreviewUrl(previewHtml);
+      window.open(localPreviewUrl, '_blank', 'noopener,noreferrer');
     }
 
     async function downloadGeneratedPage(product = lastGeneratedProduct) {
@@ -674,7 +721,8 @@
         return;
       }
 
-      const template = await loadPageTemplate();
+      const template = await buildGeneratedPageHtml();
+      setLocalPreviewUrl(template);
       triggerDownload(`${slugify(product.product_id)}.html`, template, 'text/html;charset=utf-8');
     }
 
@@ -1034,6 +1082,12 @@
     document.getElementById('resetBtn').addEventListener('click', resetFilters);
     document.getElementById('generateQrBtn').addEventListener('click', generateQr);
     document.getElementById('downloadQrBtn').addEventListener('click', downloadQr);
+    document.getElementById('localPreviewBtn').addEventListener('click', () => {
+      openLocalPreview().catch(error => {
+        console.error(error);
+        setFormStatus(error.message || 'Could not open the local preview.', 'error');
+      });
+    });
     document.getElementById('downloadPageBtn').addEventListener('click', () => {
       downloadGeneratedPage().catch(error => {
         console.error(error);
