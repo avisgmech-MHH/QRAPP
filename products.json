@@ -1358,5 +1358,22 @@
     "invoice_number_date": "EX/MHH/25-26/366 & 31.01.2026",
     "machine_identification_number": "HIGH SPEED CORRUGATOR MACHINE : M",
     "purchase_agreement_number": "CK 5871 – 2014 / C157"
+  },
+  {
+    "product_id": "test",
+    "supplier_name": "test",
+    "traceable_date_code": "9393939",
+    "drawing_number": "494949",
+    "material_description": "dsjfksjdkjf",
+    "nominal_diameter": "",
+    "wooden_drum_no": "93/22",
+    "hose_material_heat_no": "94948",
+    "braid_material_lot_no": "25",
+    "length_details_meters": "dsfds",
+    "total_quantity": "3434",
+    "material_certification_control_number": "sdfsd",
+    "invoice_number_date": "343",
+    "machine_identification_number": "3242",
+    "purchase_agreement_number": "3242"
   }
 ]
