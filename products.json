@@ -1360,20 +1360,20 @@
     "purchase_agreement_number": "CK 5871 – 2014 / C157"
   },
   {
-    "product_id": "test",
-    "supplier_name": "test",
-    "traceable_date_code": "9393939",
-    "drawing_number": "494949",
-    "material_description": "dsjfksjdkjf",
-    "nominal_diameter": "",
-    "wooden_drum_no": "93/22",
-    "hose_material_heat_no": "94948",
-    "braid_material_lot_no": "25",
-    "length_details_meters": "dsfds",
-    "total_quantity": "3434",
-    "material_certification_control_number": "sdfsd",
-    "invoice_number_date": "343",
-    "machine_identification_number": "3242",
-    "purchase_agreement_number": "3242"
+    "product_id": "DRUM001",
+    "supplier_name": "MADRAS HYDRAULIC HOSE(P) LTD",
+    "traceable_date_code": "13.04.2026",
+    "drawing_number": "AQF-B-010-010,REV-G",
+    "material_description": "BRAIDED FLEXIBLE HOSE",
+    "nominal_diameter": "1\"",
+    "wooden_drum_no": "1/2",
+    "hose_material_heat_no": "304L & A250708AA01",
+    "braid_material_lot_no": "304L & SBI 502",
+    "length_details_meters": "250.00(36.61+36.77+50.69+31.45+23.50+35.82)",
+    "total_quantity": "250.00(820.00 Ft)",
+    "material_certification_control_number": "TC NO: MHH/003 & 13.04.2026",
+    "invoice_number_date": "EX/MHH/26-27/003 & 13.04.2026",
+    "machine_identification_number": "HIGH SPEED CORRUGATOR MACHINE : N",
+    "purchase_agreement_number": "CK 5871 - 2014 /AIR"
   }
 ]
