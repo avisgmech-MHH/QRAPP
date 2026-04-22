@@ -1392,5 +1392,22 @@
     "invoice_number_date": "EX/MHH/26-27/003 & 13.04.2026",
     "machine_identification_number": "HIGH SPEED CORRUGATOR MACHINE : N",
     "purchase_agreement_number": "CK 5871 - 2014 /AIR"
+  },
+  {
+    "product_id": "DRUM005",
+    "supplier_name": "MADRAS HYDRAULIC HOSE(P) LTD",
+    "traceable_date_code": "22.04.2026",
+    "drawing_number": "AQF-B-010-010,REV-G",
+    "material_description": "BRAIDED FLEXIBLE HOSE",
+    "nominal_diameter": "2\"",
+    "wooden_drum_no": "2/2",
+    "hose_material_heat_no": "304L & A250708AA01",
+    "braid_material_lot_no": "304L & SBI 502",
+    "length_details_meters": "250(35+85+30+65+20)",
+    "total_quantity": "250.00(820.00 Ft)",
+    "material_certification_control_number": "Tc.No :MHH/103 22.04.2026",
+    "invoice_number_date": "EX/MHH/26-27/003 & 22.04.2026",
+    "machine_identification_number": "HIGH SPEED CORRUGATOR MACHINE : N",
+    "purchase_agreement_number": "CK 5871 - 2014 /AIR"
   }
 ]
